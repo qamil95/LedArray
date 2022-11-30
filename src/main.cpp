@@ -1,28 +1,5 @@
 #include "main.h"
-
-// pins on 74595
-byte shiftRegisterClockInputPin = 2;   // SCK
-byte storageRegisterClockInputPin = 3; // RCK
-byte serialDataInputPin = 4;           // SI
-byte outputEnablePin = 5;              // OE
-
-// pins on dallas temperature
-byte dallasTemperaturePin = 6;
-
-// defined_later  = 7;
-byte GROUND_NOT_USE = 8;
-
-// pins for RGB
-byte greenPin = 9;
-byte bluePin = 10;
-byte redPin = 11;
-
-// 7segment pins
-byte dinPin = 7;
-byte csPin = 12;
-byte clkPin = 13;
-
-byte photoresistorPin = A3;
+#include "pins.h"
 
 OneWire oneWire(dallasTemperaturePin);
 DallasTemperature dallasTemperature(&oneWire);
@@ -31,6 +8,7 @@ DeviceAddress dallasThermometerAddress;
 byte i = 1;
 
 RTC_DS3231 clock = RTC_DS3231();
+// Wymiana bateryjki - bo jest wywalona i czekam aż przyjdzie z ali nowa, tak jakby ktoś to czytał :P
 // Bateria ma być PLUSEM do przodu, tym z napisami, a spodem bateryjki do tyłu (do białego pola na płytce).
 // Górna blaszka (górny pin, przy DS3231) to ten minus, tył bateryjki.
 // Dolna blaszka (dolny pin przy +) to plus właśnie
@@ -52,7 +30,6 @@ LedControl_SW_SPI sevenSegment;
 
 void setup()
 {
-  // put your setup code here, to run once:
   pinMode(serialDataInputPin, OUTPUT);
   pinMode(storageRegisterClockInputPin, OUTPUT);
   pinMode(shiftRegisterClockInputPin, OUTPUT);
@@ -218,6 +195,8 @@ void updateTemperaturesOnSevenSegment(float leftThermometer, float rightThermome
   // sevenSegment.clearDisplay(0);
   sevenSegmentInternalUpdateTemperature(leftThermometer, 7);
   sevenSegmentInternalUpdateTemperature(rightThermometer, 2);
+  sevenSegment.setChar(0, 3, ' ', false);
+  sevenSegment.setChar(0, 4, ' ', false);
 }
 
 void sevenSegmentInternalUpdateTemperature(float value, byte startIndex)

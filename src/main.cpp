@@ -27,6 +27,7 @@ const int minLightLevel = 550;
 const int maxLightLevel = 800;
 
 LedControl_SW_SPI sevenSegment;
+bool resetSevenSegmentOnNextUpdate = false;
 
 void setup()
 {
@@ -35,6 +36,8 @@ void setup()
   pinMode(shiftRegisterClockInputPin, OUTPUT);
   pinMode(outputEnablePin, OUTPUT);
   analogWrite(outputEnablePin, 250);
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(buttonResetSevenSegmentPin, INPUT_PULLUP);
 
   Wire.begin(0x68);
   clock.begin(&Wire);
@@ -105,9 +108,22 @@ void loop()
   analogWrite(greenPin, map(rgbColorsAdjustedLight[GREEN_INDEX], 0, 255, 0, MAX_GREEN_VALUE));
   analogWrite(bluePin, rgbColorsAdjustedLight[BLUE_INDEX]);
 
+  digitalWrite(LED_BUILTIN, resetSevenSegmentOnNextUpdate);
+  if (!resetSevenSegmentOnNextUpdate && (digitalRead(buttonResetSevenSegmentPin) == LOW))
+  {
+    resetSevenSegmentOnNextUpdate = true;
+    sevenSegment.shutdown(0, true);
+  }
+
   unsigned long now = millis();
   if (now > previousColorUpdate + colorUpdateInterval)
   {
+    if (resetSevenSegmentOnNextUpdate)
+    {
+      resetSevenSegmentOnNextUpdate = false;
+      sevenSegment.shutdown(0, false);
+    }
+
     previousColorUpdate = now;
     updateColors();
 

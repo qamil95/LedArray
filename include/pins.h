@@ -20,6 +20,7 @@ byte redPin = 11;
 // 7segment pins
 byte dinPin = 7;
 byte csPin = 12;
-byte clkPin = 13;
+byte clkPin = A2;
 
 byte photoresistorPin = A3;
+byte buttonResetSevenSegmentPin = A1;

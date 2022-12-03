@@ -11,3 +11,6 @@ void showDate(const char *txt, const DateTime &dt);
 void updateColors();
 void updateTemperaturesOnSevenSegment(float leftThermometer, float rightThermometer);
 void sevenSegmentInternalUpdateTemperature(float value, byte decimals);
+void refreshBrightness();
+void applyNewBrightnessToSevenSegment();
+void applyNewBrightnessToLedArray();

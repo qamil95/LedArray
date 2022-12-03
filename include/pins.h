@@ -24,3 +24,5 @@ byte clkPin = A2;
 
 byte photoresistorPin = A3;
 byte buttonResetSevenSegmentPin = A1;
+
+byte brightnessPotentiometerPin = A7;

@@ -35,9 +35,9 @@ void setup()
   pinMode(storageRegisterClockInputPin, OUTPUT);
   pinMode(shiftRegisterClockInputPin, OUTPUT);
   pinMode(outputEnablePin, OUTPUT);
-  analogWrite(outputEnablePin, 250);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(buttonResetSevenSegmentPin, INPUT_PULLUP);
+  pinMode(brightnessPotentiometerPin, INPUT);
 
   Wire.begin(0x68);
   clock.begin(&Wire);
@@ -68,6 +68,7 @@ void setup()
 
 void loop()
 {
+  refreshBrightness();
   int readLightLevel = analogRead(photoresistorPin);
   int currentLightLevelScaled = readLightLevel - minLightLevel;
   int maxLightLevelScaled = maxLightLevel - minLightLevel;
@@ -223,4 +224,59 @@ void sevenSegmentInternalUpdateTemperature(float value, byte startIndex)
   sevenSegment.setDigit(0, startIndex, digits / 10, false);
   sevenSegment.setDigit(0, startIndex - 1, digits % 10, true);
   sevenSegment.setDigit(0, startIndex - 2, decimals, false);
+}
+
+const int minBrightnessPotentiometerValue = 900;
+const int maxBrightnessPotentiometerValue = 100;
+
+const int minBrightnessSevenSegmentValue = 0;
+const int maxBrightnessSevenSegmentValue = 15;
+
+const int minBrightnessLedArrayValue = 254;
+const int maxBrightnessLedArrayValue = 50;
+
+byte currentSevenSegmentBrightnessLevel = 255;
+byte currentLedArrayBrightnessLevel = 255;
+
+void refreshBrightness()
+{
+  int potentiometer = analogRead(brightnessPotentiometerPin);
+  if (potentiometer < maxBrightnessPotentiometerValue) potentiometer = maxBrightnessPotentiometerValue;
+  if (potentiometer > minBrightnessPotentiometerValue) potentiometer = minBrightnessPotentiometerValue;
+
+  byte newSevenSegmentBrightnessLevel = map(
+    potentiometer, 
+    minBrightnessPotentiometerValue, 
+    maxBrightnessPotentiometerValue,
+    minBrightnessSevenSegmentValue, 
+    maxBrightnessSevenSegmentValue);
+
+  byte newLedArrayBrightnessLevel = map(
+    potentiometer, 
+    minBrightnessPotentiometerValue, 
+    maxBrightnessPotentiometerValue,
+    minBrightnessLedArrayValue, 
+    maxBrightnessLedArrayValue);
+
+    if (newSevenSegmentBrightnessLevel != currentSevenSegmentBrightnessLevel)
+    {
+      currentSevenSegmentBrightnessLevel = newSevenSegmentBrightnessLevel;
+      applyNewBrightnessToSevenSegment();
+    }
+
+    if (newLedArrayBrightnessLevel != currentLedArrayBrightnessLevel)
+    {
+      currentLedArrayBrightnessLevel = newLedArrayBrightnessLevel;
+      applyNewBrightnessToLedArray();
+    }
+}
+
+void applyNewBrightnessToSevenSegment()
+{
+  sevenSegment.setIntensity(0, currentSevenSegmentBrightnessLevel);
+}
+
+void applyNewBrightnessToLedArray()
+{
+  analogWrite(outputEnablePin, currentLedArrayBrightnessLevel);
 }

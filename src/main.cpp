@@ -20,7 +20,7 @@ const byte BLUE_INDEX = 2;
 
 byte stage = 0;
 unsigned long previousColorUpdate = 0;
-const int colorUpdateInterval = 10000;
+const int colorUpdateInterval = 3000;
 const byte MAX_GREEN_VALUE = 100;
 
 const int minLightLevel = 550;

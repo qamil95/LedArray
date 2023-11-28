@@ -8,10 +8,6 @@ DeviceAddress dallasThermometerAddress;
 byte i = 1;
 
 RTC_DS3231 clock = RTC_DS3231();
-// Wymiana bateryjki - bo jest wywalona i czekam aż przyjdzie z ali nowa, tak jakby ktoś to czytał :P
-// Bateria ma być PLUSEM do przodu, tym z napisami, a spodem bateryjki do tyłu (do białego pola na płytce).
-// Górna blaszka (górny pin, przy DS3231) to ten minus, tył bateryjki.
-// Dolna blaszka (dolny pin przy +) to plus właśnie
 
 byte rgbColors[3] = {255, 0, 0};
 const byte RED_INDEX = 0;
@@ -63,7 +59,7 @@ void setup()
 
     sevenSegment.setChar(0, i, '-', false);
   }
-  // clock.adjust(DateTime(2022, 11, 6, 10, 14, 0));
+  //clock.adjust(DateTime(2023, 11, 28, 16, 58, 0));
 }
 
 void loop()
@@ -131,7 +127,7 @@ void loop()
     dallasTemperature.requestTemperatures();
     updateTemperaturesOnSevenSegment(clock.getTemperature(), dallasTemperature.getTempC(dallasThermometerAddress));
 
-    // showDate("DATETIME: ", clock.now());
+    showDate("DATETIME: ", clock.now());
     Serial.println(clock.getTemperature());
     Serial.println(dallasTemperature.getTempC(dallasThermometerAddress));
   }

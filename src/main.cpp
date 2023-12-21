@@ -17,6 +17,8 @@ const byte BLUE_INDEX = 2;
 byte stage = 0;
 unsigned long previousColorUpdate = 0;
 const int colorUpdateInterval = 3000;
+unsigned long previousTimerUpdate = 0;
+const int timerUpdateInterval = 200;
 const byte MAX_GREEN_VALUE = 100;
 
 const int minLightLevel = 550;
@@ -24,6 +26,14 @@ const int maxLightLevel = 800;
 
 LedControl_SW_SPI sevenSegment;
 bool resetSevenSegmentOnNextUpdate = false;
+
+// contructor to select https://github.com/olikraus/u8g2/wiki/u8g2setupcpp#sh1106-128x64_noname-1
+U8G2_SH1106_128X64_NONAME_1_HW_I2C display(U8G2_R0);
+//U8G2_SH1106_128X64_NONAME_2_HW_I2C display(U8G2_R0);
+//U8G2_SH1106_128X64_NONAME_F_HW_I2C display(U8G2_R0);
+//U8G2_SH1106_128X64_NONAME_1_2ND_HW_I2C display(U8G2_R0);
+//U8G2_SH1106_128X64_NONAME_2_2ND_HW_I2C display(U8G2_R0);
+//U8G2_SH1106_128X64_NONAME_F_2ND_HW_I2C display(U8G2_R0);
 
 void setup()
 {
@@ -60,6 +70,7 @@ void setup()
     sevenSegment.setChar(0, i, '-', false);
   }
   //clock.adjust(DateTime(2023, 11, 28, 16, 58, 0));
+  display.begin();
 }
 
 void loop()
@@ -130,6 +141,24 @@ void loop()
     showDate("DATETIME: ", clock.now());
     Serial.println(clock.getTemperature());
     Serial.println(dallasTemperature.getTempC(dallasThermometerAddress));
+  }
+
+  if (now > previousTimerUpdate + timerUpdateInterval)
+  {
+    previousTimerUpdate = now;
+    char firstLine[30];
+    char secondLine[30];
+    DateTime now = clock.now();
+    sprintf(firstLine, "%02d:%02d:%02d", now.hour(), now.minute(), now.second()); 
+    sprintf(secondLine, "%02d/%02d/%02d", now.day(), now.month(), now.year()); 
+
+    display.firstPage();
+    do {
+      display.setFont(u8g2_font_ncenB18_tr);
+      display.drawStr(0,18, firstLine);
+      display.setFont(u8g2_font_ncenB08_tr);
+      display.drawStr(0,32, secondLine);
+    } while ( display.nextPage() );
   }
 }
 

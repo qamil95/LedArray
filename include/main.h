@@ -5,6 +5,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <LedControl_SW_SPI.h>
+#include <U8g2lib.h>
 
 void writeToRegister(byte number);
 void showDate(const char *txt, const DateTime &dt);
